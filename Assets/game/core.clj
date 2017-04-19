@@ -1,10 +1,18 @@
 (ns game.core
-  (use arcadia.core))
+  (use arcadia.core
+       arcadia.linear)
+  (import [UnityEngine 
+           Resources 
+           Quaternion]))
 
 ; (log "Hello, from game.core")
 
-(def card (object-named "Card"))
+; (def card (object-named "Card"))
 (def cards (objects-tagged "Card"))
+
+(def card-prefab (UnityEngine.Resources/Load "card"))
+(instantiate card-prefab)
+(instantiate card-prefab (v3 2 0 0))
 
 ; (set-state! card :rotate? false)
 ; (state card)
@@ -18,6 +26,15 @@
   (update-state! go
                  :rotate? 
                  #(not %)))
+
+(defn foreach [coll fun]
+  (doseq [e coll]
+    (fun e)))
+
+(foreach cards 
+         #(hook+ %
+                 :update 
+                 #'game.core/rotate-card))
 
 (doseq [card cards] 
   (hook+ card
