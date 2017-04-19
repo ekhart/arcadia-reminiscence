@@ -5,14 +5,15 @@
            Resources 
            Quaternion]))
 
-; (log "Hello, from game.core")
 
-; (def card (object-named "Card"))
-(def cards (objects-tagged "Card"))
+; (log "Hello, from game.core")
 
 (def card-prefab (UnityEngine.Resources/Load "card"))
 (instantiate card-prefab)
 (instantiate card-prefab (v3 2 0 0))
+
+; (def card (object-named "Card"))
+(def cards (objects-tagged "Card"))
 
 ; (set-state! card :rotate? false)
 ; (state card)
@@ -23,18 +24,7 @@
     (.. go transform (Rotate 0 -1 0))))
 
 (defn set-rotate?-card [go]
-  (update-state! go
-                 :rotate? 
-                 #(not %)))
-
-(defn foreach [coll fun]
-  (doseq [e coll]
-    (fun e)))
-
-(foreach cards 
-         #(hook+ %
-                 :update 
-                 #'game.core/rotate-card))
+  (update-state! go :rotate? #(not %)))
 
 (doseq [card cards] 
   (hook+ card
