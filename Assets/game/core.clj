@@ -12,6 +12,12 @@
 (def cards-parent (UnityEngine.GameObject. "Cards"))
 (def card-prefab (UnityEngine.Resources/Load "card"))
 
+;(remove-state! card-prefab :rotate?)
+;(set-state! card-prefab :flipped? false)
+
+; (set-state! card :rotate? false)
+; (update-state! card :rotate? (constantly true))
+
 (child+ cards-parent 
         (instantiate card-prefab))
 (child+ cards-parent
@@ -20,17 +26,16 @@
 (def card (object-tagged "Card"))
 (def cards (objects-tagged "Card"))
 
-; (set-state! card :rotate? false)
-; (state card)
-; (update-state! card :rotate? (constantly true))
-
 (defn rotate-card [go]
   (if (state go :rotate?)
     (.. go transform (Rotate 0 -1 0))))
 
 (defn set-rotate?-card [go]
-  (let [animator (cmpt go UnityEngine.Animator)]
-    (.SetTrigger animator "flip")))
+  (let [animator (cmpt go UnityEngine.Animator)
+        flipped? (state go :flipped?)
+        trigger (if flipped? "flipBack" "flip")]
+    (update-state! go :flipped? #(not %))
+    (.SetTrigger animator trigger)))
 
 
 (doseq [card cards] 
