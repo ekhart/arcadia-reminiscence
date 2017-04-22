@@ -14,9 +14,8 @@
 
 ;(remove-state! card-prefab :rotate?)
 ;(set-state! card-prefab :flipped? false)
-
-; (set-state! card :rotate? false)
-; (update-state! card :rotate? (constantly true))
+;(set-state! card-prefab :rotate? false)
+;(update-state! card :rotate? (constantly true))
 
 (child+ cards-parent 
         (instantiate card-prefab))
