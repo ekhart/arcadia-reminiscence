@@ -7,7 +7,7 @@
            Animator]))
 
 
-; (log "Hello, from game.core")
+(log "Hello, from game.core")
 
 ;(def cards-parent (UnityEngine.GameObject. "Cards"))
 (def canvas (object-named "Canvas"))
@@ -47,12 +47,25 @@
 
 (defn set-rotate?-card [go]
   (let [animator (cmpt go UnityEngine.Animator)
-        face (second (children go))
         flipped? (state go :flipped?)
         trigger (if flipped? "flipBack" "flip")]
-    (.SetActive face (not flipped?))
     (update-state! go :flipped? #(not %))
     (.SetTrigger animator trigger)))
+
+(defn cards-flipped []
+  (filter #(state % :flipped?) cards))
+
+(defn cards-flip-back! [cards]
+  (doseq [card cards]
+    (set-rotate?-card card)))
+
+(defn cards-flip-back!-when-2 []
+  (if (= (count (cards-flipped)) 2)
+    (cards-flip-back! (cards-flipped))))
+
+(count cards)
+
+(cards-flip-back!-when-2)
 
 ;; (doseq [card cards] 
 ;;   (hook+ card
