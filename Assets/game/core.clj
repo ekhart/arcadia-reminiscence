@@ -14,7 +14,7 @@
 (def card-prefab (UnityEngine.Resources/Load "card"))
 
 (child+ canvas
-        (instantiate card-prefab))
+        (instantiate card-prefab (v3 -100 0 0)))
 (child+ canvas
         (instantiate card-prefab (v3 100 0 0)))
 
@@ -29,22 +29,35 @@
 ;(update-state! card :rotate? (constantly true))
 
 
-(defn rotate-card [go]
-  (if (state go :rotate?)
-    (.. go transform (Rotate 0 -1 0))))
+;; (defn rotate-card [go]
+;;   (let [face (second (children card))
+;;         flipped? (state go :flipped?)]
+;;     (.SetActive face flipped?)))
+;;   ;; (second (children card))
+  ;; (if (state go :rotate?)
+  ;;   (.. go transform (Rotate 0 -1 0))))
+
+;; (def face (second (children card)))
+;; (.name face)
+;; (.activeSelf face)
+;; (.SetActive face false)
+
+;; (def animator (cmpt card UnityEngine.Animator))
+;; (.snapShot animator)
 
 (defn set-rotate?-card [go]
   (let [animator (cmpt go UnityEngine.Animator)
+        face (second (children go))
         flipped? (state go :flipped?)
         trigger (if flipped? "flipBack" "flip")]
+    (.SetActive face (not flipped?))
     (update-state! go :flipped? #(not %))
     (.SetTrigger animator trigger)))
 
-
-(doseq [card cards] 
-  (hook+ card
-         :update 
-         #'game.core/rotate-card))
+;; (doseq [card cards] 
+;;   (hook+ card
+;;          :update 
+;;          #'game.core/rotate-card))
 
 (doseq [card cards]
   (hook+ card
