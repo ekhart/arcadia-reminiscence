@@ -19,12 +19,19 @@
         (instantiate card-prefab (v3 100 0 0)))
 
 (def card (object-tagged "Card"))
-(def cards (objects-tagged "Card"))
+(defn cards [] (objects-tagged "Card"))
+
+(defn do-cards [do-card]
+  (doseq [card (cards)]
+    (do-card card)))
 
 ;(remove-state! card-prefab :rotate?)
-(doseq [card cards]
-  (set-state! card :flipped? false))
-; (set-state! card-prefab :flipped? false)
+(do-cards #(do
+             (set-state! % :flipped? false)
+             (set-state! % :type :default)))
+
+(do-cards #(println (state %)))
+;(set-state! card-prefab :flipped? false)
 ;(set-state! card-prefab :rotate? false)
 ;(update-state! card :rotate? (constantly true))
 
@@ -53,15 +60,29 @@
     (.SetTrigger animator trigger)))
 
 (defn cards-flipped []
-  (filter #(state % :flipped?) cards))
+  (filter #(state % :flipped?) (cards)))
 
 (defn cards-flip-back! [cards]
+  (do-cards set-rotate?-card))
+
+(defn cards-same []
+  (filter #(state % :type) 
+          (cards-flipped)))
+
+(defn cards-are-same? []
+  (= (count (cards-same)) 2))
+
+(defn cards-destroy [cards]
   (doseq [card cards]
-    (set-rotate?-card card)))
+    (destroy card)))
+
+;; (cards-destroy (cards-flipped))
 
 (defn cards-flip-back!-when-2 []
   (if (= (count (cards-flipped)) 2)
-    (cards-flip-back! (cards-flipped))))
+      (if (cards-are-same?)
+        (cards-destroy (cards-same))
+        (cards-flip-back! (cards-flipped)))))
 
 (count cards)
 
