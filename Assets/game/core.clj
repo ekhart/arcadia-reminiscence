@@ -26,13 +26,26 @@
 (defn card [] (object-tagged "Card"))
 (defn cards [] (objects-tagged "Card"))
 
+(defn card-update-type [card res-name]
+  (update-state! card 
+                 :type 
+                 (fn [type] 
+                   (keyword res-name))))
+
 (defn card-set-face-texture! [card res-name]
   (let [face (second (children card))
-        image (cmpt face UnityEngine.UI.RawImage)]
-    (set! (.texture image)
-          (resource res-name))))
+        rawimage (cmpt face UnityEngine.UI.RawImage)]
+    (set! (.texture rawimage)
+          (resource res-name))
+    (card-update-type card res-name)))
 
-(card-set-face-texture! (card) "robot")
+(def card-faces ["robot" "roboty-drogowe"])
+(defn rand-card-face [] 
+  (rand-nth card-faces))
+
+;; (keyword (rand-card-face))
+
+(card-set-face-texture! (card) (rand-card-face))
 
 ;; (UnityEngine.Resources/Load "roboty-drogowe")
 ;; (UnityEngine.Resources/Load 
