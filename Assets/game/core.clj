@@ -4,22 +4,41 @@
   (import [UnityEngine 
            Resources 
            Quaternion
-           Animator]))
+           Animator
+           Sprite]
+          [UnityEngine.UI Image RawImage]))
 
 
 (log "Hello, from game.core")
 
+(defn resource [name] 
+  (UnityEngine.Resources/Load name))
+
 ;(def cards-parent (UnityEngine.GameObject. "Cards"))
 (def canvas (object-named "Canvas"))
-(def card-prefab (UnityEngine.Resources/Load "card"))
+(def card-prefab (resource "card"))
 
 (child+ canvas
         (instantiate card-prefab (v3 -100 0 0)))
 (child+ canvas
         (instantiate card-prefab (v3 100 0 0)))
 
-(def card (object-tagged "Card"))
+(defn card [] (object-tagged "Card"))
 (defn cards [] (objects-tagged "Card"))
+
+(defn card-set-face-texture! [card res-name]
+  (let [face (second (children card))
+        image (cmpt face UnityEngine.UI.RawImage)]
+    (set! (.texture image)
+          (resource res-name))))
+
+(card-set-face-texture! (card) "robot")
+
+;; (UnityEngine.Resources/Load "roboty-drogowe")
+;; (UnityEngine.Resources/Load 
+;;  (type-args UnityEngine.Sprite)
+;;  "roboty-drogowe")
+;; => return the same as without type-args
 
 (defn do-cards [do-card]
   (doseq [card (cards)]
@@ -97,3 +116,13 @@
   (hook+ card
          :on-mouse-down 
          #'game.core/set-rotate?-card))
+
+(import 'System.Linq.Enumerable)
+(def r1 (Enumerable/Where [1 2 3 4 5] even?))
+(seq r1)
+
+(def ev (sys-func [Int32 Boolean] [x] (even? x)))
+(ev 1)
+
+(def r3 (Enumerable/Repeat (type-args Single) 2 5))
+(seq r3)
