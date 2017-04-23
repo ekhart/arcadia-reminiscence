@@ -15,13 +15,20 @@
   (UnityEngine.Resources/Load name))
 
 ;(def cards-parent (UnityEngine.GameObject. "Cards"))
+
 (def canvas (object-named "Canvas"))
 (def card-prefab (resource "card"))
 
-(child+ canvas
-        (instantiate card-prefab (v3 -100 0 0)))
-(child+ canvas
-        (instantiate card-prefab (v3 100 0 0)))
+(defn card-add [i]
+  (let [position (v3 (+ (- 300) (* i 100)) 0 0)
+        card (instantiate card-prefab position)]
+         (child+ canvas card)))
+
+(defn generate-level [no]
+  (dotimes [i (* 2 no)]
+    (card-add i)))
+
+(generate-level 2)
 
 (defn card [] (object-tagged "Card"))
 (defn cards [] (objects-tagged "Card"))
@@ -43,9 +50,7 @@
 (defn rand-card-face [] 
   (rand-nth card-faces))
 
-;; (keyword (rand-card-face))
-
-(card-set-face-texture! (card) (rand-card-face))
+;; (card-set-face-texture! (card) (rand-card-face))
 
 ;; (UnityEngine.Resources/Load "roboty-drogowe")
 ;; (UnityEngine.Resources/Load 
@@ -60,7 +65,7 @@
 ;(remove-state! card-prefab :rotate?)
 (do-cards #(do
              (set-state! % :flipped? false)
-             (set-state! % :type :default)))
+             (set-state! % :type :robot)))
 
 (do-cards #(println (state %)))
 ;(set-state! card-prefab :flipped? false)
