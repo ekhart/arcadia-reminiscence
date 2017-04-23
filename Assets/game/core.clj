@@ -9,21 +9,25 @@
 
 ; (log "Hello, from game.core")
 
-(def cards-parent (UnityEngine.GameObject. "Cards"))
+;(def cards-parent (UnityEngine.GameObject. "Cards"))
+(def canvas (object-named "Canvas"))
 (def card-prefab (UnityEngine.Resources/Load "card"))
 
-;(remove-state! card-prefab :rotate?)
-;(set-state! card-prefab :flipped? false)
-;(set-state! card-prefab :rotate? false)
-;(update-state! card :rotate? (constantly true))
-
-(child+ cards-parent 
+(child+ canvas
         (instantiate card-prefab))
-(child+ cards-parent
-        (instantiate card-prefab (v3 2 0 0)))
+(child+ canvas
+        (instantiate card-prefab (v3 100 0 0)))
 
 (def card (object-tagged "Card"))
 (def cards (objects-tagged "Card"))
+
+;(remove-state! card-prefab :rotate?)
+(doseq [card cards]
+  (set-state! card :flipped? false))
+; (set-state! card-prefab :flipped? false)
+;(set-state! card-prefab :rotate? false)
+;(update-state! card :rotate? (constantly true))
+
 
 (defn rotate-card [go]
   (if (state go :rotate?)

@@ -35,6 +35,7 @@
 
 ; partial create new curried function
 (def plus-one (partial + 1))
+(plus-one 1)
 (map plus-one my-list)
 ; my-list
 
@@ -49,8 +50,8 @@ identity
 (take 1 my-list)
 ;; (take 3 (range))
 ;; in LightTable
-(range)
-(range 2)
+; (range)
+; (range 2)
 
 
 ;; Lisp macro
@@ -67,3 +68,4 @@ identity
 (when (= 1 1) 1)
 (when (= 1 0) 1)
 (macroexpand '(when (= 1 1) 1))
+(macroexpand '(when (= 1 0) 1))
