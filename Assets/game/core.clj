@@ -54,11 +54,11 @@
 
 ;; (shuffle (flatten (map #(repeat 2 (keyword %)) card-faces)))
 
-(doseq [[card face] 
-        (->> card-faces
+(doseq [[card face] ; ~foreach, destruction
+        (->> card-faces ; ->> pipe operator
              (map #(repeat 2 %))
              flatten
-             shuffle
+             shuffle)
              (zipmap (cards)))]
   (card-set-face-texture! card face))
 
@@ -113,7 +113,8 @@
         flipped? (state go :flipped?)
         trigger (if flipped? "flipBack" "flip")]
     (update-state! go :flipped? #(not %))
-    (.SetTrigger animator trigger)))
+    (.SetTrigger animator trigger))
+  (cards-flip-back!-when-2))
 
 (defn cards-flipped []
   (filter #(state % :flipped?) (cards)))
