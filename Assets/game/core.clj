@@ -47,8 +47,27 @@
     (card-update-type card res-name)))
 
 (def card-faces ["robot" "roboty-drogowe"])
-(defn rand-card-face [] 
-  (rand-nth card-faces))
+(defn rand-card-face 
+  ([] (rand-nth card-faces))
+  ([_] (rand-card-face))
+  ([coll face] ))
+
+;; (shuffle (flatten (map #(repeat 2 (keyword %)) card-faces)))
+
+(doseq [[card face] 
+        (->> card-faces
+             (map #(repeat 2 %))
+             flatten
+             shuffle
+             (zipmap (cards)))]
+  (card-set-face-texture! card face))
+
+;; (map rand-card-face 
+;;      (range (* 2 (count card-faces))))
+
+;; (reduce conj 
+;;         []
+;;         (range (* 2 (count card-faces))))
 
 ;; (card-set-face-texture! (card) (rand-card-face))
 
