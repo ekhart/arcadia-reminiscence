@@ -1,6 +1,7 @@
 ;; what return f(x)?
 ; f(x) = x + 2 - pure function - use only arguments
 ; we know that would be always x+2
+; referential transparency
 
 ; a = 2
 ; f(x) = x + a

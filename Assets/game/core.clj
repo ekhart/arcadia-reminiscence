@@ -16,6 +16,8 @@
 
 ;(def cards-parent (UnityEngine.GameObject. "Cards"))
 
+;; (UnityEngine.GameObject.)
+
 (def canvas (object-named "Canvas"))
 (def card-prefab (resource "card"))
 
@@ -53,18 +55,16 @@
   ([coll face] ))
 
 ;; (shuffle (flatten (map #(repeat 2 (keyword %)) card-faces)))
-
 (doseq [[card face] ; ~foreach, destruction
         (->> card-faces ; ->> pipe operator
              (map #(repeat 2 %))
              flatten
-             shuffle)
+             shuffle
              (zipmap (cards)))]
   (card-set-face-texture! card face))
 
 ;; (map rand-card-face 
 ;;      (range (* 2 (count card-faces))))
-
 ;; (reduce conj 
 ;;         []
 ;;         (range (* 2 (count card-faces))))
@@ -82,12 +82,12 @@
     (do-card card)))
 
 ;(remove-state! card-prefab :rotate?)
-(do-cards #(do
-             (set-state! % :flipped? false)
-             (set-state! % :type :robot)))
+;; (do-cards #(do
+;;              (set-state! % :flipped? false)
+;;              (set-state! % :type :robot)))
 
-(do-cards #(println (state %)))
-;(set-state! card-prefab :flipped? false)
+;; (do-cards #(println (state %)))
+;; ;(set-state! card-prefab :flipped? false)
 ;(set-state! card-prefab :rotate? false)
 ;(update-state! card :rotate? (constantly true))
 
@@ -108,59 +108,54 @@
 ;; (def animator (cmpt card UnityEngine.Animator))
 ;; (.snapShot animator)
 
-(defn set-rotate?-card [go]
+(defn card-flip! [go]
   (let [animator (cmpt go UnityEngine.Animator)
         flipped? (state go :flipped?)
         trigger (if flipped? "flipBack" "flip")]
     (update-state! go :flipped? #(not %))
-    (.SetTrigger animator trigger))
-  (cards-flip-back!-when-2))
+    (.SetTrigger animator trigger)))
 
 (defn cards-flipped []
   (filter #(state % :flipped?) (cards)))
-
-(defn cards-flip-back! [cards]
-  (do-cards set-rotate?-card))
-
-(defn cards-same []
-  (filter #(state % :type) 
-          (cards-flipped)))
-
-(defn cards-are-same? []
-  (= (count (cards-same)) 2))
 
 (defn cards-destroy [cards]
   (doseq [card cards]
     (destroy card)))
 
-;; (cards-destroy (cards-flipped))
+(defn cards-flip-back! [cards]
+  (doseq [card cards] 
+    (card-flip! card)))
+
+(defn cards-same []
+  (map #(state % :type) (cards-flipped)))
+
+(defn list-all-elements-same? [coll]
+  (apply = coll))
+
+(defn cards-are-same? []
+  (let [cards (cards-same)]
+    (and (= (count cards) 2)
+         (list-all-elements-same? cards))))
 
 (defn cards-flip-back!-when-2 []
-  (if (= (count (cards-flipped)) 2)
+  (if (= (count (cards-flipped)) 
+         2)
       (if (cards-are-same?)
-        (cards-destroy (cards-same))
+        (cards-destroy (cards-flipped))
         (cards-flip-back! (cards-flipped)))))
 
-(count cards)
-
-(cards-flip-back!-when-2)
+(defn set-rotate?-card [go]
+  (card-flip! go)
+  (cards-flip-back!-when-2)
+  ;; (if (empty? (cards))
+  ;;   (gene))
+)
 
 ;; (doseq [card cards] 
 ;;   (hook+ card
 ;;          :update 
 ;;          #'game.core/rotate-card))
 
-(doseq [card cards]
-  (hook+ card
-         :on-mouse-down 
-         #'game.core/set-rotate?-card))
-
-(import 'System.Linq.Enumerable)
-(def r1 (Enumerable/Where [1 2 3 4 5] even?))
-(seq r1)
-
-(def ev (sys-func [Int32 Boolean] [x] (even? x)))
-(ev 1)
-
-(def r3 (Enumerable/Repeat (type-args Single) 2 5))
-(seq r3)
+(do-cards #(hook+ %
+                  :on-mouse-down 
+                  #'game.core/set-rotate?-card))
